@@ -18,10 +18,16 @@ public class PersistenceManager : MonoBehaviour
     public Player PlayerObj { get => playerObj; set => playerObj = value; }
 
     private Player playerObj;
+    
+    [System.Serializable]
+    class Highscore{
+        public int highscore = 0;
+        public string highscoreName = "Dummy";
+    }
 
-    [SerializeField] private TMP_InputField playerInputField;
+    Highscore highscore;
 
-
+    
 
     // Start is called before the first frame update
     void Awake()
@@ -40,13 +46,10 @@ public class PersistenceManager : MonoBehaviour
 #else
         Application.quitting += SavePlayerName;
 #endif
+        Application.quitting += SaveHighscore;
         LoadPlayerName();
-
-    }
-
-    public void UpdatePlayerName(string value)
-    {
-        playerObj.PlayerName = value;
+        LoadHighscore();  
+           
     }
 
     void SavePlayerName()
@@ -59,29 +62,49 @@ public class PersistenceManager : MonoBehaviour
         File.WriteAllText(path, data);
     }
 
+    void SaveHighscore()
+    {
+        if (!Directory.Exists(Application.persistentDataPath + "/SaveData")) Directory.CreateDirectory(Application.persistentDataPath + "/SaveData");
+
+        string path = Application.persistentDataPath + "/SaveData/highscore.json";
+
+        string data = JsonUtility.ToJson(highscore);
+        File.WriteAllText(path, data);
+    }
+
+    public void LoadHighscore()
+    {
+
+        string path = Application.persistentDataPath + "/SaveData/highscore.json";
+        if (File.Exists(path))
+        {
+            string data = File.ReadAllText(path);
+            highscore = JsonUtility.FromJson<Highscore>(data);
+            if (highscore.highscore > Player.highscore){
+                Player.highScoreName = highscore.highscoreName;
+                Player.highscore = highscore.highscore;
+            }
+            return;
+        }
+        highscore = new Highscore();
+    }
+
     public void LoadPlayerName()
     {
 
-
-
-        if (playerObj == null)
+        string path = Application.persistentDataPath + "/SaveData/Playername.json";
+        if (File.Exists(path))
         {
-            string path = Application.persistentDataPath + "/SaveData/Playername.json";
-            if (File.Exists(path))
-            {
-                string data = File.ReadAllText(path);
-                playerObj = JsonUtility.FromJson<Player>(data);
-                playerInputField.text = playerObj.PlayerName;
-                return;
-            } else {
-                playerObj = new Player();
-            }
-            
+            string data = File.ReadAllText(path);
+            PlayerObj = JsonUtility.FromJson<Player>(data);
+            return;
         }
-
+        playerObj = new Player();
     }
 
-
-
-
+    public void UpdateHighscore(){
+        highscore.highscore = Player.highscore;
+        highscore.highscoreName = Player.highScoreName;
+        SaveHighscore();
+    }
 }

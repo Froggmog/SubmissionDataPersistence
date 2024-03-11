@@ -65,12 +65,23 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"{PersistenceManager.Instance.PlayerObj.playerName} 's Score : {m_Points}";
+        ScoreText.text = $"{PersistenceManager.Instance.PlayerObj.PlayerName} 's Score : {m_Points}";
     }
 
     public void GameOver()
     {
+        if (m_Points >  PersistenceManager.Instance.PlayerObj.PersonalHighscore){
+            PersistenceManager.Instance.PlayerObj.PersonalHighscore = m_Points;
+        }
+
+        if (m_Points > Player.highscore){
+            Player.highscore = m_Points;
+            Player.highScoreName = PersistenceManager.Instance.PlayerObj.PlayerName;
+            PersistenceManager.Instance.UpdateHighscore();
+        }
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    
 }

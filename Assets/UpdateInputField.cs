@@ -7,13 +7,18 @@ using System;
 
 public class UpdateInputField : MonoBehaviour
 {
+
+    private MenuUIHandler menuHandler;
+
+    public TMP_InputField playerNameIF;
+    public TMP_Text personalHighscoreTF;
+    public TMP_Text overallHighscoreTF;
     // Start is called before the first frame update
     void Start()
     {
-
-        TMP_InputField iF = GetComponent<TMP_InputField>();
-        iF.onEndEdit.AddListener(PersistenceManager.Instance.UpdatePlayerName);
-        iF.text = PersistenceManager.Instance.PlayerObj.PlayerName;
+        menuHandler = GameObject.Find("MenuUIHandler").GetComponent<MenuUIHandler>();
+        playerNameIF.onDeselect.AddListener(menuHandler.UpdateNameInputField);
+        playerNameIF.text = PersistenceManager.Instance.PlayerObj.PlayerName;
 
     }
 
