@@ -34,4 +34,8 @@ public class MenuUIHandler : MonoBehaviour
 #endif
         
     }
+
+    public void UpdateNameInputField(string value){
+            PersistenceManager.Instance.UpdatePlayerName(value);
+    }
 }
